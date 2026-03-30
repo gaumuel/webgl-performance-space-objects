@@ -1,0 +1,5 @@
+{
+  "name": "Soldier Strike 2.5D",
+  "description": "A high-performance 2.5D shooter built with WebGL and ECS pattern, featuring thousands of bullets and moving targets.",
+  "requestFramePermissions": []
+}
