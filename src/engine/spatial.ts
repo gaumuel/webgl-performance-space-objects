@@ -1,5 +1,5 @@
-const HASH_SIZE = 131072; // Power of 2
-const MAX_ENTITIES = 2000000;
+const HASH_SIZE = 524288; // Power of 2
+const MAX_ENTITIES = 5000000;
 
 /**
  * A highly optimized flat-array spatial hash for extreme performance.

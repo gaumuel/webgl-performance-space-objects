@@ -20,7 +20,7 @@ import { WebGLRenderer } from './engine/renderer';
 import { SpatialGrid } from './engine/spatial';
 import { Shield, Zap, Target, Heart, Play, RefreshCw, Home, Skull } from 'lucide-react';
 
-const MAX_ENTITIES = 2000000;
+const MAX_ENTITIES = 5000000;
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -511,7 +511,7 @@ export default function App() {
               <span className="font-mono text-sm">{fireRate} Hz</span>
             </div>
             <input 
-              type="range" min="1" max="100000" step="1"
+              type="range" min="1" max="20000" step="1"
               value={fireRate} onChange={(e) => setFireRate(Number(e.target.value))}
               className="w-48 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-yellow-400"
             />
@@ -543,7 +543,7 @@ export default function App() {
               <span className="font-mono text-sm">{maxEnemies}</span>
             </div>
             <input 
-              type="range" min="1" max="1000000" step="1"
+              type="range" min="1" max="100000" step="1"
               value={maxEnemies} onChange={(e) => setMaxEnemies(Number(e.target.value))}
               className="w-48 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-red-500"
             />

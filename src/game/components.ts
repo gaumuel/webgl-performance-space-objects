@@ -1,16 +1,18 @@
 import { createWorld, defineComponent, Types } from 'bitecs';
 
+const MAX_ENTITIES = 5000000;
+
 // Components
 export const Position = defineComponent({
   x: Types.f32,
   y: Types.f32,
   z: Types.f32 // For 2.5D depth
-});
+}, MAX_ENTITIES);
 
 export const Velocity = defineComponent({
   x: Types.f32,
   y: Types.f32
-});
+}, MAX_ENTITIES);
 
 export const Sprite = defineComponent({
   type: Types.ui8, // 0: Player, 1: Bullet, 2: Enemy (Square), 3: Enemy (Circle), 4: Enemy (Triangle)
@@ -18,35 +20,35 @@ export const Sprite = defineComponent({
   colorR: Types.f32,
   colorG: Types.f32,
   colorB: Types.f32
-});
+}, MAX_ENTITIES);
 
 export const Player = defineComponent({
   health: Types.f32,
   fireRate: Types.f32,
   lastFire: Types.f32,
   damage: Types.f32
-});
+}, MAX_ENTITIES);
 
 export const Enemy = defineComponent({
   health: Types.f32,
   speed: Types.f32,
   damage: Types.f32
-});
+}, MAX_ENTITIES);
 
 export const Bullet = defineComponent({
   damage: Types.f32
-});
+}, MAX_ENTITIES);
 
 export const PlayerBase = defineComponent({
   health: Types.f32,
   maxHealth: Types.f32
-});
+}, MAX_ENTITIES);
 
 export const EnemyBase = defineComponent({
   health: Types.f32,
   maxHealth: Types.f32
-});
+}, MAX_ENTITIES);
 
-export const GridDot = defineComponent({});
+export const GridDot = defineComponent({}, MAX_ENTITIES);
 
-export const world = createWorld({ maxEntities: 20000 });
+export const world = createWorld({ maxEntities: MAX_ENTITIES });

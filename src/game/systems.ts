@@ -272,51 +272,63 @@ export const shootingSystem = (dt: number, time: number, worldMouseX: number, wo
     playerX = Position.x[eid];
     playerY = Position.y[eid];
     const fireInterval = 1 / Player.fireRate[eid];
+    const bullets = bulletQuery(world);
 
-    if (keys.has(' ')) {
+    if (keys.has(' ') && bullets.length < 200000) {
       // Prevent huge bursts if we haven't fired in a while (e.g. paused or lag spike)
       const maxBurstTime = Math.max(0.1, fireInterval * 2);
       if (time - Player.lastFire[eid] > maxBurstTime) {
         Player.lastFire[eid] = time - maxBurstTime;
       }
 
-      let bulletsSpawned = 0;
-      while (time - Player.lastFire[eid] >= fireInterval && bulletsSpawned < 100) {
-        const bEid = addEntity(world);
-        addComponent(world, Bullet, bEid);
-        addComponent(world, Position, bEid);
-        addComponent(world, Velocity, bEid);
-        addComponent(world, Sprite, bEid);
-
-        const angle = Math.atan2(worldMouseY - Position.y[eid], worldMouseX - Position.x[eid]);
+      const intendedBullets = Math.floor((time - Player.lastFire[eid]) / fireInterval);
+      if (intendedBullets > 0) {
+        const actualToSpawn = Math.min(intendedBullets, 100);
+        const damageMultiplier = intendedBullets / actualToSpawn;
         
-        // Calculate exact time this bullet should have been fired
-        const bulletTime = Player.lastFire[eid] + fireInterval;
-        const timeAlive = time - bulletTime;
+        // Distribute the spawned bullets evenly across the entire time gap
+        // to avoid "clumping" at the start of the frame.
+        const timeGap = intendedBullets * fireInterval;
+        const spawnSpacing = timeGap / actualToSpawn;
 
-        const speed = 800;
-        // Add slight spread based on fire rate to make it look like a stream instead of a solid line
-        const spread = (Player.fireRate[eid] > 50) ? (Math.random() - 0.5) * 0.15 : 0;
-        const finalAngle = angle + spread;
+        for (let b = 0; b < actualToSpawn; b++) {
+          const bEid = addEntity(world);
+          addComponent(world, Bullet, bEid);
+          addComponent(world, Position, bEid);
+          addComponent(world, Velocity, bEid);
+          addComponent(world, Sprite, bEid);
 
-        Velocity.x[bEid] = Math.cos(finalAngle) * speed;
-        Velocity.y[bEid] = Math.sin(finalAngle) * speed;
+          const angle = Math.atan2(worldMouseY - Position.y[eid], worldMouseX - Position.x[eid]);
+          
+          // Calculate exact time this bullet should have been fired
+          // We use the distributed spacing for the visual position
+          const bulletTime = Player.lastFire[eid] + (b + 1) * spawnSpacing;
+          const timeAlive = time - bulletTime;
 
-        // Advance position based on how long ago it should have fired
-        Position.x[bEid] = Position.x[eid] + Velocity.x[bEid] * timeAlive;
-        Position.y[bEid] = Position.y[eid] + Velocity.y[bEid] * timeAlive;
-        Position.z[bEid] = 20; // Float above grid
+          const speed = 800;
+          // Add slight spread based on fire rate to make it look like a stream instead of a solid line
+          const spread = (Player.fireRate[eid] > 50) ? (Math.random() - 0.5) * 0.15 : 0;
+          const finalAngle = angle + spread;
 
-        Bullet.damage[bEid] = Player.damage[eid];
-        
-        Sprite.type[bEid] = 1; // Circle
-        Sprite.size[bEid] = 8;
-        Sprite.colorR[bEid] = 1.0;
-        Sprite.colorG[bEid] = 0.8;
-        Sprite.colorB[bEid] = 0.0;
+          Velocity.x[bEid] = Math.cos(finalAngle) * speed;
+          Velocity.y[bEid] = Math.sin(finalAngle) * speed;
 
-        Player.lastFire[eid] += fireInterval;
-        bulletsSpawned++;
+          // Advance position based on how long ago it should have fired
+          Position.x[bEid] = Position.x[eid] + Velocity.x[bEid] * timeAlive;
+          Position.y[bEid] = Position.y[eid] + Velocity.y[bEid] * timeAlive;
+          Position.z[bEid] = 20; // Float above grid
+
+          Bullet.damage[bEid] = Player.damage[eid] * damageMultiplier;
+          
+          Sprite.type[bEid] = 1; // Circle
+          Sprite.size[bEid] = 8;
+          Sprite.colorR[bEid] = 1.0;
+          Sprite.colorG[bEid] = 0.8;
+          Sprite.colorB[bEid] = 0.0;
+        }
+
+        // Advance lastFire by the full intended amount to keep timing consistent
+        Player.lastFire[eid] += timeGap;
       }
     } else {
       // Reset lastFire so the next press fires immediately, allowing fast tapping
