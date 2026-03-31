@@ -35,16 +35,17 @@ const FRAGMENT_SHADER = `
     float dist = length(coord);
 
     if (vType < 0.5) { // Square
-      // No discard needed for square
+      gl_FragColor = vColor;
     } else if (vType < 1.5) { // Circle
       if (dist > 0.5) discard;
+      gl_FragColor = vColor;
     } else if (vType < 2.5) { // Triangle
       if (coord.y > 0.4 || abs(coord.x) > (0.4 - coord.y) * 0.8) discard;
-    } else if (vType < 3.5) { // Cube
+      gl_FragColor = vColor;
+    } else if (vType < 3.5) { // Cube (Hexagon)
       vec2 p = coord * 2.0;
       float hex = max(abs(p.x) * 1.1547, abs(p.x) * 0.57735 + abs(p.y));
       if (hex > 1.0) discard;
-      
       if (p.y < -0.57735 * abs(p.x)) {
         gl_FragColor = vec4(vColor.rgb * 1.2, vColor.a);
       } else if (p.x < 0.0) {
@@ -52,6 +53,30 @@ const FRAGMENT_SHADER = `
       } else {
         gl_FragColor = vec4(vColor.rgb * 0.8, vColor.a);
       }
+      return;
+    } else if (vType < 4.5) { // Pyramid (Shaded Triangle)
+      if (coord.y > 0.4 || abs(coord.x) > (0.4 - coord.y) * 0.8) discard;
+      vec2 p = coord;
+      if (p.x > 0.0 && p.y < 0.0) {
+         gl_FragColor = vec4(vColor.rgb * 1.2, vColor.a);
+      } else if (p.x < 0.0 && p.y < 0.0) {
+         gl_FragColor = vec4(vColor.rgb * 0.6, vColor.a);
+      } else {
+         gl_FragColor = vec4(vColor.rgb * 0.9, vColor.a);
+      }
+      return;
+    } else if (vType < 5.5) { // Shaded Circle
+      if (dist > 0.5) discard;
+      float light = dot(normalize(vec3(coord, 0.5)), normalize(vec3(0.5, 0.5, 1.0)));
+      gl_FragColor = vec4(vColor.rgb * (0.6 + 0.4 * light), vColor.a);
+      return;
+    } else if (vType < 6.5) { // Shaded Diamond
+      float d = abs(coord.x) + abs(coord.y);
+      if (d > 0.5) discard;
+      if (coord.x > 0.0 && coord.y > 0.0) gl_FragColor = vec4(vColor.rgb * 1.2, vColor.a);
+      else if (coord.x < 0.0 && coord.y > 0.0) gl_FragColor = vec4(vColor.rgb * 0.6, vColor.a);
+      else if (coord.x < 0.0 && coord.y < 0.0) gl_FragColor = vec4(vColor.rgb * 0.8, vColor.a);
+      else gl_FragColor = vec4(vColor.rgb * 1.0, vColor.a);
       return;
     }
 

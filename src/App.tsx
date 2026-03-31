@@ -20,7 +20,7 @@ import { WebGLRenderer } from './engine/renderer';
 import { SpatialGrid } from './engine/spatial';
 import { Shield, Zap, Target, Heart, Play, RefreshCw, Home, Skull } from 'lucide-react';
 
-const MAX_ENTITIES = 20000;
+const MAX_ENTITIES = 2000000;
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,8 +46,8 @@ export default function App() {
   useEffect(() => { scoreRef.current = score; }, [score]);
 
   const [health, setHealth] = useState(100);
-  const [playerBaseHealth, setPlayerBaseHealth] = useState(1000);
-  const [enemyBaseHealth, setEnemyBaseHealth] = useState(2000);
+  const [playerBaseHealth, setPlayerBaseHealth] = useState(10000000);
+  const [enemyBaseHealth, setEnemyBaseHealth] = useState(10000000);
   
   const [fireRate, setFireRate] = useState(10);
   const fireRateRef = useRef(fireRate);
@@ -111,8 +111,8 @@ export default function App() {
     Sprite.colorG[pbEid] = 0.8;
     Sprite.colorB[pbEid] = 1.0;
 
-    PlayerBase.health[pbEid] = 1000;
-    PlayerBase.maxHealth[pbEid] = 1000;
+    PlayerBase.health[pbEid] = 10000000;
+    PlayerBase.maxHealth[pbEid] = 10000000;
 
     // Enemy Base
     const ebEid = addEntity(world);
@@ -130,8 +130,8 @@ export default function App() {
     Sprite.colorG[ebEid] = 0.2;
     Sprite.colorB[ebEid] = 0.2;
 
-    EnemyBase.health[ebEid] = 2000;
-    EnemyBase.maxHealth[ebEid] = 2000;
+    EnemyBase.health[ebEid] = 10000000;
+    EnemyBase.maxHealth[ebEid] = 10000000;
 
     // Player
     const pEid = addEntity(world);
@@ -156,8 +156,8 @@ export default function App() {
     Player.lastFire[pEid] = 0;
 
     setHealth(100);
-    setPlayerBaseHealth(1000);
-    setEnemyBaseHealth(2000);
+    setPlayerBaseHealth(10000000);
+    setEnemyBaseHealth(10000000);
     setScore(0);
     scoreRef.current = 0;
     setGameState('playing');
@@ -511,7 +511,7 @@ export default function App() {
               <span className="font-mono text-sm">{fireRate} Hz</span>
             </div>
             <input 
-              type="range" min="1" max="1000" step="1"
+              type="range" min="1" max="100000" step="1"
               value={fireRate} onChange={(e) => setFireRate(Number(e.target.value))}
               className="w-48 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-yellow-400"
             />
@@ -543,7 +543,7 @@ export default function App() {
               <span className="font-mono text-sm">{maxEnemies}</span>
             </div>
             <input 
-              type="range" min="1" max="1000" step="1"
+              type="range" min="1" max="1000000" step="1"
               value={maxEnemies} onChange={(e) => setMaxEnemies(Number(e.target.value))}
               className="w-48 h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-red-500"
             />

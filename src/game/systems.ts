@@ -129,7 +129,7 @@ export const enemySystem = (dt: number, maxEnemies: number, viewportWidth: numbe
     Enemy.speed[eid] = speed;
     Enemy.damage[eid] = 10;
 
-    Sprite.type[eid] = 1 + Math.floor(Math.random() * 3); 
+    Sprite.type[eid] = 3 + Math.floor(Math.random() * 4); // 3: Cube, 4: Pyramid, 5: Shaded Circle, 6: Diamond
     Sprite.size[eid] = 20 + Math.random() * 30;
     Sprite.colorR[eid] = 0.8 + Math.random() * 0.2;
     Sprite.colorG[eid] = 0.2 + Math.random() * 0.3;
@@ -327,8 +327,9 @@ export const shootingSystem = (dt: number, time: number, worldMouseX: number, wo
   // Despawn bullets that are too far away from the player
   const bullets = bulletQuery(world);
   bulletsToRemove.length = 0;
-  const maxDistX = viewportWidth / 2 + 200;
-  const maxDistY = viewportHeight / 2 + 200;
+  // Increase range to cover the entire game world (viewportWidth is already 2x canvas width)
+  const maxDistX = viewportWidth;
+  const maxDistY = viewportHeight;
 
   for (let i = 0; i < bullets.length; i++) {
     const bEid = bullets[i];
